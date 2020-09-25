@@ -1,6 +1,6 @@
 import axios from 'axios';
 axios.defaults.headers['Content-Type'] = 'application/json';
-axios.defaults.withCredentials=true
+axios.defaults.withCredentials="omit"
     axios.defaults.crossDomain=true
 let config = {
   baseURL: '/',
