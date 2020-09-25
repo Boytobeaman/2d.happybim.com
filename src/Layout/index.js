@@ -99,7 +99,10 @@ const Layout = ({ history }) => {
     canvasRegister();
     canvas = new Topology('topology-canvas', canvasOptions);
     async function getNodeData() {
-      const data = await getNodeById(history.location.state.id);
+      let data = await getNodeById(history.location.state.id);
+      if(data.data && data.data.data){
+        data = data.data.data
+      }
       canvas.open(data.data)
     }
 

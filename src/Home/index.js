@@ -18,7 +18,10 @@ const Home = ({ history }) => {
     async function loadData() {
       try {
         await setLoading(true);
-        const data = await getListByPage(currentPageIndex);
+        let data = await getListByPage(currentPageIndex);
+        if(data.data && data.data.data){
+          data = data.data.data
+        }
         setList(data.list);
         setTotal(data.count);
         message.success('加载成功!');
