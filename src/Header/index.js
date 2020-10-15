@@ -87,6 +87,7 @@ const Header = ({ canvas, history, setSaveChartVisible }) => {
   const onHandleSelect = data => {
     switch (data.key) {
       case 'create_new':
+        sessionStorage.removeItem('activeChart');
         canvas.open({ nodes: [], lines: [] });
         break;
       case 'import_json':
@@ -338,7 +339,12 @@ const Header = ({ canvas, history, setSaveChartVisible }) => {
       <Tag color="cyan" style={{ float: 'right', right: 10, marginTop: 12 }}>x{scaleNumber}</Tag>
       
       <ButtonGroup style={{ float: 'right', right: 10, marginTop: 7 }}>
-        <Button onClick={() => history.push('/')}>
+        <Button onClick={
+          () => {
+            sessionStorage.removeItem('activeChart');
+            history.push('/')
+          }
+        }>
           <Icon type="rollback" />
           返回主页
         </Button>
