@@ -4,7 +4,7 @@ import * as FileSaver from 'file-saver';
 import './index.css';
 const ButtonGroup = Button.Group;
 const { SubMenu } = Menu;
-const Header = ({ canvas, history }) => {
+const Header = ({ canvas, history, setSaveChartVisible }) => {
 
   const [isLock, setIsLock] = useState(false); // 是否处于锁定状态
 
@@ -97,6 +97,9 @@ const Header = ({ canvas, history }) => {
           new Blob([JSON.stringify(canvas.data)], { type: 'text/plain;charset=utf-8' }),
           `le5le.topology.json`
         );
+        break;
+      case 'save':
+        setSaveChartVisible(true)
         break;
       case 'save_png':
         canvas.saveAsImage('le5le.topology.png');
@@ -329,11 +332,16 @@ const Header = ({ canvas, history }) => {
           <Menu.Item key="github"><a href="https://github.com/Summer-andy/topology-react/" rel="noopener noreferrer" target="_blank">开源github</a></Menu.Item>
           <Menu.Item key="docs"> <a href="https://www.yuque.com/alsmile/topology/installation" rel="noopener noreferrer" target="_blank">开发文档</a></Menu.Item>
         </SubMenu>
+        <Menu.Item key="save">保存</Menu.Item>
       </Menu>
 
       <Tag color="cyan" style={{ float: 'right', right: 10, marginTop: 12 }}>x{scaleNumber}</Tag>
-
+      
       <ButtonGroup style={{ float: 'right', right: 10, marginTop: 7 }}>
+        <Button onClick={() => history.push('/')}>
+          <Icon type="rollback" />
+          返回主页
+        </Button>
         <Popover content={menu} title="默认连线类型" trigger="hover">
           <Button>{lineStyle}</Button>
         </Popover>
@@ -359,10 +367,6 @@ const Header = ({ canvas, history }) => {
           锁定
         </Button>
         }
-        <Button onClick={() => history.push('/')}>
-          <Icon type="rollback" />
-          返回主页
-        </Button>
         <Button onClick={() => scaleZoomOut()}>
           <Icon type="plus" />
         </Button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo, Fragment } from 'react';
+import SaveChart from './component/saveChart'
 import { Topology, registerNode } from '@topology/core';
 import {
   flowData,
@@ -84,12 +85,15 @@ import BackgroundComponent from './component/backgroundComponent';
 import LineComponent from './component/lineComponent';
 import './index.css'
 const { confirm } = Modal;
+
 let canvas;
 const Layout = ({ history }) => {
 
   const [selected, setSelected] = useState({});
 
   const [isLoadCanvas, setIsLoadCanvas] = useState(false);
+
+  const [saveChartVisible, setSaveChartVisible] = useState(false);
 
   useEffect(() => {
     const canvasOptions = {
@@ -100,10 +104,11 @@ const Layout = ({ history }) => {
     canvas = new Topology('topology-canvas', canvasOptions);
     async function getNodeData() {
       let data = await getNodeById(history.location.state.id);
-      if(data.data && data.data.data){
-        data = data.data.data
-      }
-      canvas.open(data.data)
+
+      // if(data.data && data.data.data){
+      //   data = data.data.data
+      // }
+      canvas.open(data.data.chart_data)
     }
 
     if(history.location.state.from === "/preview") {
@@ -298,7 +303,7 @@ const Layout = ({ history }) => {
 
    const renderHeader = useMemo(() => {
      if(isLoadCanvas)
-     return <Header canvas={canvas} history={history} />
+     return <Header canvas={canvas} history={history} setSaveChartVisible={setSaveChartVisible} />
    }, [isLoadCanvas, history])
 
 
@@ -354,6 +359,11 @@ const Layout = ({ history }) => {
             renderRightArea
           }
         </div>
+        <SaveChart
+          visible={saveChartVisible}
+          setSaveChartVisible={setSaveChartVisible}
+          canvas={canvas}
+         />
       </div>
     </Fragment>
   );
