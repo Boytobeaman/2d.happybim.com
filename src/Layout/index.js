@@ -111,7 +111,7 @@ const Layout = ({ history }) => {
       canvas.open(data.data.chart_data)
     }
 
-    if(history.location.state.from === "/preview") {
+    if(history.location.state && history.location.state.from === "/preview") {
       console.log(history.location.state);
       confirm({
         title: '是否要保存预览前的数据?',

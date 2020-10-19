@@ -127,8 +127,13 @@ const Header = ({ canvas, history, setSaveChartVisible }) => {
         let reader = new FileReader();
         const result = new Blob([JSON.stringify(canvas.data)], { type: 'text/plain;charset=utf-8' });
         reader.readAsText(result, 'text/plain;charset=utf-8');
+        let id = null;
+        if(history.location.state && history.location.state.id){
+          id = history.location.state.id
+        }
+        
         reader.onload = (e) => {
-          history.push({ pathname: '/preview', state: { data: JSON.parse(reader.result), id: history.location.state.id } });
+          history.push({ pathname: '/preview', state: { data: JSON.parse(reader.result), id} });
         }
         break;
       default:

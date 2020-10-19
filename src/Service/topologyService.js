@@ -28,3 +28,7 @@ export async function updateChart(obj) {
   delete obj.id
   return await axios.put(`${API_ROOT}/lele-lists/${id}`, obj);
 }
+
+export async function deleteChartByID(id) {
+  return await axios.delete(`${API_ROOT}/lele-lists/${id}`);
+}
