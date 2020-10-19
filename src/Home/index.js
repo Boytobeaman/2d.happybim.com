@@ -17,7 +17,7 @@ const Home = ({ history,props }) => {
   async function loadData() {
     try {
       await setLoading(true);
-      let data = await getListByPage(currentPageIndex);
+      let data = await getListByPage(currentPageIndex, 12);
       let data_list;
       let data_count;
       if(data.data && data.data.data){
