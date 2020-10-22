@@ -1,12 +1,13 @@
 import React, { useMemo, useEffect } from 'react';
 import { Form, InputNumber, Tabs, Collapse, Row, Col, Input, Select, Tag } from 'antd';
 // import ExtraDataForm from './ExtraDataForm';
+import EventComponent from './EventComponent';
 import './index.css';
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
-const CanvasProps = ({ data, form: { getFieldDecorator }, form, onFormValueChange }) => {
+const CanvasProps = ({ data, form: { getFieldDecorator }, form, onFormValueChange, onEventValueChange }) => {
 
   const { x, y, width, height } = data?.node?.rect || {};
   const { rotate, lineWidth, strokeStyle, dash, text, id } = data?.node || {};
@@ -219,6 +220,13 @@ const CanvasProps = ({ data, form: { getFieldDecorator }, form, onFormValueChang
               }
             </Panel>
           </Collapse>
+        </TabPane>
+        <TabPane tab="事件" key="3" style={{ margin: 0 }}>
+          <EventComponent canvasData={data} onEventValueChange={onEventValueChange} />
+        </TabPane>
+        <TabPane tab="动效" key="4" style={{ margin: 0 }}>
+        </TabPane>
+        <TabPane tab="结构" key="5" style={{ margin: 0 }}>
         </TabPane>
       </Tabs>
 

@@ -85,8 +85,7 @@ import BackgroundComponent from './component/backgroundComponent';
 import LineComponent from './component/lineComponent';
 import './index.css'
 const { confirm } = Modal;
-
-let canvas;
+export let canvas;
 const Layout = ({ history }) => {
 
   const [selected, setSelected] = useState({});
@@ -97,7 +96,8 @@ const Layout = ({ history }) => {
 
   useEffect(() => {
     const canvasOptions = {
-      rotateCursor: '/rotate.cur'
+      rotateCursor: '/rotate.cur',
+      locked: 0
     };
     canvasOptions.on = onMessage;
     canvasRegister();
@@ -105,9 +105,6 @@ const Layout = ({ history }) => {
     async function getNodeData() {
       let data = await getNodeById(history.location.state.id);
 
-      // if(data.data && data.data.data){
-      //   data = data.data.data
-      // }
       canvas.open(data.data.chart_data)
     }
 
@@ -118,6 +115,7 @@ const Layout = ({ history }) => {
         okText: '保存',
         cancelText: '取消',
         onOk() {
+          history.location.state.data.locked = 0;
           canvas.open(history.location.state.data);
         },
         onCancel() {
@@ -207,6 +205,12 @@ const Layout = ({ history }) => {
     canvas.updateProps(selected.node);
   }, [selected]);
 
+  const onEventValueChange = value => {
+    console.log(value);
+    selected.node.events = value;
+    canvas.updateProps(selected.node);
+  }
+
   /**
   * 当线条表单数据变化时, 重新渲染canvas
   * @params {object} value - 图形的宽度,高度, x, y等等
@@ -280,7 +284,7 @@ const Layout = ({ history }) => {
 
   const rightAreaConfig = useMemo(() => {
     return {
-      node: selected && <NodeComponent data={selected} onFormValueChange={onHandleFormValueChange} />, // 渲染Node节点类型的组件
+      node: selected && <NodeComponent data={selected} onFormValueChange={onHandleFormValueChange} onEventValueChange={onEventValueChange} />, // 渲染Node节点类型的组件
       line: selected && <LineComponent data={selected} onFormValueChange={onHandleLineFormValueChange} />, // 渲染线条类型的组件
       default: canvas && <BackgroundComponent data={canvas} /> // 渲染画布背景的组件
     }
