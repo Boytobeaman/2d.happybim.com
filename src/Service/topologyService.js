@@ -1,5 +1,6 @@
 import Axios from '../utils/Service';
 import axios from 'axios';
+import { userID as defaultUserID } from '../config/config'
 
 // const API_ROOT='https://api.50d.top/DEMO_APP'
 const API_ROOT='https://bim.90m.top'
@@ -8,10 +9,12 @@ const API_ROOT='https://bim.90m.top'
 //   return await axios.get(`${API_ROOT}/le5le/getListByPage?pageIndex=${currentPageIndex}&pageCount=8`);
 // }
 
-export async function getListByPage(page=1,limit=10) {
+
+
+export async function getListByPage(page=1,limit=10, userID=defaultUserID) {
   let _limit = limit;
   let _start = (page - 1) * 10;
-  return await axios.post(`${API_ROOT}/lele-lists/pagination?_start=${_start}&_limit=${_limit}&_sort=createdAt:desc`);
+  return await axios.post(`${API_ROOT}/lele-lists/pagination?users_permissions_user=${userID}&_start=${_start}&_limit=${_limit}&_sort=createdAt:desc`);
 }
 
 export async function getNodeById(id) {

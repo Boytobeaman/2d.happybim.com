@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback, useMemo, Fragment } from 'reac
 import { Form, Icon, Input, Button, Checkbox, Modal, message, Upload } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import { saveChart,updateChart } from '../../../Service/topologyService';
+import { userID as defaultUserID } from '../../../config/config'
 
 
 function getBase64(img, callback) {
@@ -88,6 +89,7 @@ class SaveChartForm extends React.Component {
         let chart_data = this.props.canvas.data
         // this.props.setSaveChartVisible(false)
         values.chart_data = chart_data;
+        values.users_permissions_user = defaultUserID;
         let activeChart = sessionStorage.getItem("activeChart")
         let callFun
         let funName = ''
