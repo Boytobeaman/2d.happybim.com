@@ -420,7 +420,8 @@ const Layout = ({ history }) => {
       .then( res => {
         if(res.status === 200){
           message.success(`上传成功`)
-        }else{
+          toGetMyChartPicture();
+        }else{c
           message.error(`上传失败`)
         }
       })
