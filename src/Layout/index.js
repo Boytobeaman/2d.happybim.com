@@ -76,23 +76,49 @@ import {
   sequenceFocusIconRect,
   sequenceFocusTextRect
 } from '@topology/sequence-diagram';
-import {  Modal } from "antd";
+import {  
+  Modal,
+  Tabs, 
+  Upload, 
+  Button, 
+  message, 
+  Col, 
+  Row,
+  Icon,
+  Popconfirm
+} from "antd";
 import { Tools } from '../config/config';
-import { getNodeById } from '../Service/topologyService'
+import { 
+  getNodeById, 
+  addMyChartPicture, 
+  getMyChartPicture,
+  deleteMyChartPicture
+} from '../Service/topologyService'
 import Header from '../Header';
 import NodeComponent from './component/nodeComponent';
 import BackgroundComponent from './component/backgroundComponent';
 import LineComponent from './component/lineComponent';
+
+import { userID as defaultUserID } from '../config/config'
+
+
+
+
 import './index.css'
 const { confirm } = Modal;
+const { TabPane } = Tabs;
+const { Dragger } = Upload;
 export let canvas;
 const Layout = ({ history }) => {
+
+  const [uploadFileList, setUploadFileList] = useState([]);
 
   const [selected, setSelected] = useState({});
 
   const [isLoadCanvas, setIsLoadCanvas] = useState(false);
 
   const [saveChartVisible, setSaveChartVisible] = useState(false);
+
 
   useEffect(() => {
     const canvasOptions = {
@@ -128,7 +154,69 @@ const Layout = ({ history }) => {
       }
     }
     setIsLoadCanvas(true);
+
+    toGetMyChartPicture()
+
   }, [history]);
+
+
+  /**
+   * 获取我的图形库
+   */
+
+
+  const toGetMyChartPicture = () => {
+    getMyChartPicture(defaultUserID)
+      .then(res => {
+        if(res.status === 200){
+          setUploadFileList(res.data)
+        }
+      })
+  }
+
+
+    /**
+   * 删除我的图片
+   */
+
+  const deleteMyChart = (id) => {
+    deleteMyChartPicture(id)
+      .then(res => {
+        if(res.status === 200){
+          message.success("删除成功")
+          toGetMyChartPicture()
+        }
+      })
+  }
+
+  /**
+   * 渲染我的图片列表
+   */
+  const renderMyChartPicture = useMemo(() => {
+    return uploadFileList.map(item => {
+      let image = item.my_chart_picture;
+      if(!image || !image.url) return
+      let url = image.url;
+      return <Col span={12}>
+        <div className="my-image-wrap" draggable>
+          <Popconfirm
+            title="确认删除图片"
+            className="delete-my-chart"
+            onConfirm={() =>{deleteMyChart(item.id)}}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Icon type="close" className="" />
+          </Popconfirm>
+          <img className="my-image" draggable src={url} alt="" onDragStart={ev => onPictureDrag(ev, image)}/>
+        </div>
+      </Col>
+    })
+
+  },[uploadFileList])
+
+
+
 
 
   /**
@@ -179,6 +267,19 @@ const Layout = ({ history }) => {
 
   const onDrag = (event, node) => {
     event.dataTransfer.setData('Text', JSON.stringify(node.data));
+  }
+
+  const onPictureDrag = (event, image) => {
+    let data = {
+      text: '',
+      rect: {
+        width: 100,
+        height: 100
+      },
+      name: 'image',
+      image: image.url
+    }
+    event.dataTransfer.setData('Text', JSON.stringify(data));
   }
 
   /**
@@ -310,6 +411,49 @@ const Layout = ({ history }) => {
      return <Header canvas={canvas} history={history} setSaveChartVisible={setSaveChartVisible} />
    }, [isLoadCanvas, history])
 
+  const uploadFileAction = (file) => {
+
+    const formData = new FormData();
+    formData.append(`files.my_chart_picture`, file);
+    formData.append('data', JSON.stringify({users_permissions_user: defaultUserID}));
+    addMyChartPicture(formData)
+      .then( res => {
+        if(res.status === 200){
+          message.success(`上传成功`)
+        }else{
+          message.error(`上传失败`)
+        }
+      })
+      .catch( err => {
+        message.error(err.message)
+      })
+
+    // dk
+  }
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+      return false
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+      return false
+    }
+
+    return true
+  
+  }
+
+  const uploadProps = {
+    name: 'file',
+    multiple: true,
+    listType: 'picture',
+    beforeUpload: beforeUpload,
+    action: uploadFileAction,
+  };
 
   return (
     <Fragment>
@@ -317,24 +461,44 @@ const Layout = ({ history }) => {
         renderHeader
       }
       <div className="page">
-        <div className="tool">
-          {
-            Tools.map((item, index) => <div key={index}>
-              <div className="title">{item.group}</div>
-              <div className="button">
-                {
-                  item.children.map((item, idx) => {
-                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                    return (<a key={idx} title={item.name} draggable href="#" onDragStart={ev => onDrag(ev, item)}>
-                      <i className={'iconfont ' + item.icon} style={{ fontSize: 13 }}>
-                      </i>
-                    </a>)
-                  })
-                }
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="系统组件" key="1">
+            <div className="tool">
+              {
+                Tools.map((item, index) => <div key={index}>
+                  <div className="title">{item.group}</div>
+                  <div className="button">
+                    {
+                      item.children.map((item, idx) => {
+                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                        return (<a key={idx} title={item.name} draggable href="#" onDragStart={ev => onDrag(ev, item)}>
+                          <i className={'iconfont ' + item.icon} style={{ fontSize: 13 }}>
+                          </i>
+                        </a>)
+                      })
+                    }
+                  </div>
+                </div>)
+              }
+            </div>
+          </TabPane>
+          <TabPane tab="我的图片" key="2">
+            <div className="my-picture">
+            <div>
+              
+              <Dragger {...uploadProps}>
+                <Button type="primary">上传图片</Button>
+              </Dragger>
+              <div className="my-pictures">
+                <Row gutter={[16, 16]}>
+                  {renderMyChartPicture}
+                </Row>
+               
               </div>
-            </div>)
-          }
-        </div>
+            </div>
+            </div>
+          </TabPane>
+        </Tabs>
         <div className="full" >
           <svg
             width="100%"

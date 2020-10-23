@@ -35,3 +35,17 @@ export async function updateChart(obj) {
 export async function deleteChartByID(id) {
   return await axios.delete(`${API_ROOT}/lele-lists/${id}`);
 }
+
+
+export async function addMyChartPicture(obj){
+  return await axios.post(`${API_ROOT}/my-pictures/`, obj);
+}
+
+
+export async function getMyChartPicture(userID){
+  return await axios.get(`${API_ROOT}/my-pictures/?users_permissions_user=${userID}`);
+}
+
+export async function deleteMyChartPicture(id){
+  return await axios.delete(`${API_ROOT}/my-pictures/${id}`);
+}
