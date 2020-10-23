@@ -421,7 +421,7 @@ const Layout = ({ history }) => {
         if(res.status === 200){
           message.success(`上传成功`)
           toGetMyChartPicture();
-        }else{c
+        }else{
           message.error(`上传失败`)
         }
       })
