@@ -4,6 +4,7 @@ import { userID as defaultUserID } from '../config/config'
 
 // const API_ROOT='https://api.50d.top/DEMO_APP'
 const API_ROOT='https://bim.90m.top'
+// const API_ROOT='http://localhost:1780'
 
 // export async function getListByPage(currentPageIndex) {
 //   return await axios.get(`${API_ROOT}/le5le/getListByPage?pageIndex=${currentPageIndex}&pageCount=8`);
@@ -48,4 +49,15 @@ export async function getMyChartPicture(userID){
 
 export async function deleteMyChartPicture(id){
   return await axios.delete(`${API_ROOT}/my-pictures/${id}`);
+}
+
+
+export async function uploadOnlinePicture(url){
+
+  let obj = {
+    url,
+    users_permissions_user: defaultUserID
+  }
+  return await axios.post(`${API_ROOT}/my-pictures/uploadOnlieURL`, obj);
+  
 }

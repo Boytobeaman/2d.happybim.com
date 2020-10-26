@@ -48,10 +48,23 @@
   height: 100px;
   cursor: pointer;
 }
+.ant-upload.ant-upload-drag .ant-upload{
+  padding: 5px 0;
+}
+.upload-online-picture{
+  display: block;
+  margin: 0 auto;
+}
 .page .my-pictures{
   max-height: 400px;
   overflow-y: auto;
   padding-top: 10px;
+}
+.close-online-upload{
+  text-align: right;
+  float: right;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 .page .my-pictures .delete-my-chart{
   position: absolute;

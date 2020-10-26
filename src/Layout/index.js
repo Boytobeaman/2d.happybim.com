@@ -85,14 +85,17 @@ import {
   Col, 
   Row,
   Icon,
-  Popconfirm
+  Popconfirm,
+  Popover,
+  Input
 } from "antd";
 import { Tools } from '../config/config';
 import { 
   getNodeById, 
   addMyChartPicture, 
   getMyChartPicture,
-  deleteMyChartPicture
+  deleteMyChartPicture,
+  uploadOnlinePicture
 } from '../Service/topologyService'
 import Header from '../Header';
 import NodeComponent from './component/nodeComponent';
@@ -102,14 +105,19 @@ import LineComponent from './component/lineComponent';
 import { userID as defaultUserID } from '../config/config'
 
 
-
-
 import './index.css'
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Dragger } = Upload;
 export let canvas;
 const Layout = ({ history }) => {
+
+
+  
+  const [onlinePicURL, setOnlinePicURL] = useState('');
+
+  const [onlinePicVisible, setOnlinePicVisible] = useState(false);
+  
 
   const [uploadFileList, setUploadFileList] = useState([]);
 
@@ -429,7 +437,6 @@ const Layout = ({ history }) => {
         message.error(err.message)
       })
 
-    // dk
   }
 
   const beforeUpload = (file) => {
@@ -456,7 +463,44 @@ const Layout = ({ history }) => {
     action: uploadFileAction,
   };
 
+  const uploadOnlinePic = () => {
+    let url = onlinePicURL;
+    if(!url){
+      message.error(`请输入URL`)
+      return
+    }
+
+    uploadOnlinePicture(url)
+      .then( res => {
+        if(res.status === 200){
+          message.success(`上传成功`)
+          closeOnlineUpload()
+          toGetMyChartPicture();
+        }else{
+          message.error(`上传失败`)
+        }
+      })
+      .catch( err => {
+        message.error(err.message)
+      })
+
+  }
+
+  const closeOnlineUpload = () => {
+    setOnlinePicVisible(false);
+    setOnlinePicURL('');
+  }
+
+  const onlinePicContent = (
+    <div>
+      <Icon type="close" className="close-online-upload" onClick={closeOnlineUpload} />
+      <Input placeholder="请输入图片URL" value={onlinePicURL} onChange={(e) => setOnlinePicURL(e.target.value)} />
+      <Button type="primary" size="small" style={{marginTop: 10}} onClick={uploadOnlinePic}>确认</Button>
+    </div>
+  )
+
   return (
+    
     <Fragment>
       {
         renderHeader
@@ -488,8 +532,12 @@ const Layout = ({ history }) => {
             <div>
               
               <Dragger {...uploadProps}>
-                <Button type="primary">上传图片</Button>
+                <Button type="primary">上传本地图片</Button>
               </Dragger>
+              <Popover visible={onlinePicVisible} content={onlinePicContent}>
+                {/* debugger */}
+                <Button type="primary" className="upload-online-picture" onClick={() => {setOnlinePicVisible(!onlinePicVisible)}}>上传线上图片</Button>
+              </Popover>
               <div className="my-pictures">
                 <Row gutter={[16, 16]}>
                   {renderMyChartPicture}
